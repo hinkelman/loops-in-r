@@ -9,8 +9,6 @@ output:
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
-library(dplyr)
-library(ggplot2)
 ```
 
 ## Idiomatic R
@@ -147,7 +145,7 @@ Same loop written with `mutate` (from [`dplyr`](https://dplyr.tidyverse.org) pac
 
 ```{r echo = TRUE, eval = FALSE}
 for (i in names(rlist)){
-  rlist[[i]] <- mutate(rlist[[i]], z = x + y)
+  rlist[[i]] <- dplyr::mutate(rlist[[i]], z = x + y)
 }
 ```
 
@@ -163,7 +161,7 @@ Same loop written with `mutate` (from [`dplyr`](https://dplyr.tidyverse.org) pac
 
 ```{r echo = TRUE}
 for (i in names(rlist)){
-  rlist[[i]] <- mutate(rlist[[i]], z = x + y)
+  rlist[[i]] <- dplyr::mutate(rlist[[i]], z = x + y)
 }
 ```
 
@@ -189,7 +187,7 @@ for (i in 1:20){
                               sample5(10:6),
                               sample5(5:1)))
 }
-out_df <- bind_rows(out_list, .id = "cohort_id")
+out_df <- dplyr::bind_rows(out_list, .id = "cohort_id")
 ```
 
 ## Generate Data
@@ -203,7 +201,7 @@ head(out_df, 10)
 ```{r echo = TRUE, eval = FALSE}
 library(ggplot2)
 for (i in unique(out_df$cohort_id)){
-  out_sub <- filter(out_df, cohort_id == i)
+  out_sub <- dplyr::filter(out_df, cohort_id == i)
   ggplot(out_sub, aes(x = day, y = river_mile)) +
     geom_line() +
     geom_point() +
@@ -220,7 +218,7 @@ for (i in unique(out_df$cohort_id)){
 Splitting data frames
 ```{r echo = TRUE, eval = FALSE}
 for (i in unique(out_df$cohort_id)){
-  out_sub <- filter(out_df, cohort_id == i)
+  out_sub <- dplyr::filter(out_df, cohort_id == i)
   write.csv(x = out_sub,
             file = file.path("output", paste0("Cohort_", i, ".csv")),
             row.names = FALSE)
@@ -258,11 +256,11 @@ in_list <- lapply(fn, read.csv)
 ```{r echo = TRUE}
 out_list <- list()
 for (i in unique(PlantGrowth$group)){
-  pg_sub <- filter(PlantGrowth, group == i)
+  pg_sub <- dplyr::filter(PlantGrowth, group == i)
   avg_weight_sub <- mean(pg_sub$weight)
   out_list[[i]] <- data.frame(avg_weight = avg_weight_sub)
 }
-bind_rows(out_list, .id = "group")
+dplyr::bind_rows(out_list, .id = "group")
 ```
 
 ## Split-Apply-Combine
@@ -270,14 +268,14 @@ bind_rows(out_list, .id = "group")
 ```{r echo = TRUE, eval = FALSE}
 out_list <- list()
 for (i in unique(PlantGrowth$group)){
-  pg_sub <- filter(PlantGrowth, group == i)
+  pg_sub <- dplyr::filter(PlantGrowth, group == i)
   avg_weight_sub <- mean(pg_sub$weight)
   out_list[[i]] <- data.frame(avg_weight = avg_weight_sub)
 }
-bind_rows(out_list, .id = "group")
+dplyr::bind_rows(out_list, .id = "group")
 ```
 
-Skip the loop with `group_by` and `summarise`.
+Skip the loop with `group_by` and `summarise` from the `dplyr` package.
 
 ```{r echo = TRUE, eval = FALSE}
 PlantGrowth %>% 

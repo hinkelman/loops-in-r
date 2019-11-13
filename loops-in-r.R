@@ -85,6 +85,7 @@ head(out_df)
 
 # Save Plots ------------------------------------------------
 
+if (!dir.exists("figures")) dir.create("figures")
 for (i in unique(out_df$cohort_id)){
   out_sub <- filter(out_df, cohort_id == i)
   ggplot(out_sub, aes(x = day, y = river_mile)) +
@@ -96,6 +97,7 @@ for (i in unique(out_df$cohort_id)){
 
 # Write Files ------------------------------------------------
 
+if (!dir.exists("output")) dir.create("output")
 for (i in names(out_list)){
   write.csv(x = mutate(out_list[[i]], cohort_id = i),
             file = file.path("output", paste0("Cohort_", i, ".csv")),

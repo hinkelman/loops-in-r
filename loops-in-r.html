@@ -3232,16 +3232,16 @@ out[, , 1]</pre>
 rlist</pre>
 
 <pre >## $A
-##   x y
-## 1 4 9
-## 2 1 8
-## 3 3 3
+##    x y
+## 1 10 9
+## 2  6 5
+## 3  3 3
 ## 
 ## $B
-##   x y
-## 1 2 3
-## 2 3 5
-## 3 4 4</pre>
+##   x  y
+## 1 3 10
+## 2 4  1
+## 3 6  4</pre>
 
 </article></slide><slide class=""><hgroup><h2>Manipulate Lists</h2></hgroup><article  id="manipulate-lists-1">
 
@@ -3278,7 +3278,7 @@ rlist[[&quot;F&quot;]]$z &lt;- rlist[[&quot;F&quot;]]$x + rlist[[&quot;F&quot;]]
 <p>Same loop written with <code>mutate</code> (from <a href='https://dplyr.tidyverse.org' title=''><code>dplyr</code></a> package) to add the column.</p>
 
 <pre class = 'prettyprint lang-r'>for (i in names(rlist)){
-  rlist[[i]] &lt;- mutate(rlist[[i]], z = x + y)
+  rlist[[i]] &lt;- dplyr::mutate(rlist[[i]], z = x + y)
 }</pre>
 
 </article></slide><slide class=""><hgroup><h2>Manipulate Lists</h2></hgroup><article  id="manipulate-lists-4">
@@ -3290,7 +3290,7 @@ rlist[[&quot;F&quot;]]$z &lt;- rlist[[&quot;F&quot;]]$x + rlist[[&quot;F&quot;]]
 <p>Same loop written with <code>mutate</code> (from <a href='https://dplyr.tidyverse.org' title=''><code>dplyr</code></a> package) to add the column.</p>
 
 <pre class = 'prettyprint lang-r'>for (i in names(rlist)){
-  rlist[[i]] &lt;- mutate(rlist[[i]], z = x + y)
+  rlist[[i]] &lt;- dplyr::mutate(rlist[[i]], z = x + y)
 }</pre>
 
 <p>Pairing <code>lapply</code> and an anonymous function allows you to skip the loop.</p>
@@ -3312,29 +3312,29 @@ for (i in 1:20){
                               sample5(10:6),
                               sample5(5:1)))
 }
-out_df &lt;- bind_rows(out_list, .id = &quot;cohort_id&quot;)</pre>
+out_df &lt;- dplyr::bind_rows(out_list, .id = &quot;cohort_id&quot;)</pre>
 
 </article></slide><slide class=""><hgroup><h2>Generate Data</h2></hgroup><article  id="generate-data-1">
 
 <pre class = 'prettyprint lang-r'>head(out_df, 10)</pre>
 
-<pre >##    cohort_id       day river_mile
-## 1          1  1.273296         18
-## 2          1  5.156774         17
-## 3          1  6.041619         16
-## 4          1  7.018367         20
-## 5          1  7.240856         20
-## 6          1  8.191988         14
-## 7          1 17.339633         13
-## 8          1 24.271378         11
-## 9          1 24.657460         12
-## 10         1 31.217195         15</pre>
+<pre >##    cohort_id        day river_mile
+## 1          1  0.6806792         18
+## 2          1  1.6473979         18
+## 3          1  5.7034870         18
+## 4          1  6.1451043         17
+## 5          1  6.5611578         16
+## 6          1  8.9997531         11
+## 7          1 22.5637265         12
+## 8          1 23.4448595         15
+## 9          1 23.5409107         12
+## 10         1 24.4495831         11</pre>
 
 </article></slide><slide class=""><hgroup><h2>Save Plots</h2></hgroup><article  id="save-plots">
 
 <pre class = 'prettyprint lang-r'>library(ggplot2)
 for (i in unique(out_df$cohort_id)){
-  out_sub &lt;- filter(out_df, cohort_id == i)
+  out_sub &lt;- dplyr::filter(out_df, cohort_id == i)
   ggplot(out_sub, aes(x = day, y = river_mile)) +
     geom_line() +
     geom_point() +
@@ -3350,7 +3350,7 @@ for (i in unique(out_df$cohort_id)){
 <p>Splitting data frames</p>
 
 <pre class = 'prettyprint lang-r'>for (i in unique(out_df$cohort_id)){
-  out_sub &lt;- filter(out_df, cohort_id == i)
+  out_sub &lt;- dplyr::filter(out_df, cohort_id == i)
   write.csv(x = out_sub,
             file = file.path(&quot;output&quot;, paste0(&quot;Cohort_&quot;, i, &quot;.csv&quot;)),
             row.names = FALSE)
@@ -3381,11 +3381,11 @@ for (i in seq_along(fn)){
 
 <pre class = 'prettyprint lang-r'>out_list &lt;- list()
 for (i in unique(PlantGrowth$group)){
-  pg_sub &lt;- filter(PlantGrowth, group == i)
+  pg_sub &lt;- dplyr::filter(PlantGrowth, group == i)
   avg_weight_sub &lt;- mean(pg_sub$weight)
   out_list[[i]] &lt;- data.frame(avg_weight = avg_weight_sub)
 }
-bind_rows(out_list, .id = &quot;group&quot;)</pre>
+dplyr::bind_rows(out_list, .id = &quot;group&quot;)</pre>
 
 <pre >##   group avg_weight
 ## 1  ctrl      5.032
@@ -3396,13 +3396,13 @@ bind_rows(out_list, .id = &quot;group&quot;)</pre>
 
 <pre class = 'prettyprint lang-r'>out_list &lt;- list()
 for (i in unique(PlantGrowth$group)){
-  pg_sub &lt;- filter(PlantGrowth, group == i)
+  pg_sub &lt;- dplyr::filter(PlantGrowth, group == i)
   avg_weight_sub &lt;- mean(pg_sub$weight)
   out_list[[i]] &lt;- data.frame(avg_weight = avg_weight_sub)
 }
-bind_rows(out_list, .id = &quot;group&quot;)</pre>
+dplyr::bind_rows(out_list, .id = &quot;group&quot;)</pre>
 
-<p>Skip the loop with <code>group_by</code> and <code>summarise</code>.</p>
+<p>Skip the loop with <code>group_by</code> and <code>summarise</code> from the <code>dplyr</code> package.</p>
 
 <pre class = 'prettyprint lang-r'>PlantGrowth %&gt;% 
   group_by(group) %&gt;% 
