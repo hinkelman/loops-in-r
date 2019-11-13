@@ -1,3 +1,5 @@
+library(dplyr)
+library(ggplot2)
 
 # Sequence ------------------------------------------------
 
@@ -59,26 +61,10 @@ for (i in names(rlist)){
 }
 
 for (i in names(rlist)){
-  rlist[[i]] <- dplyr::mutate(rlist[[i]], z = x + y)
+  rlist[[i]] <- mutate(rlist[[i]], z = x + y)
 }
 
-rlist <- lapply(rlist, function(x){x$z = x$x + x$y; return(x)})
-
-# Split-Apply-Combine ------------------------------------------------
-
-library(dplyr)
-out_list <- list()
-for (i in unique(PlantGrowth$group)){
-  pg_sub <- filter(PlantGrowth, group == i)
-  avg_weight_sub <- mean(pg_sub$weight)
-  out_list[[i]] <- tibble(avg_weight = avg_weight_sub)
-}
-out_list
-bind_rows(out_list, .id = "group")
-
-PlantGrowth %>% 
-  group_by(group) %>% 
-  summarise(avg_weight = mean(weight))
+rlist <- lapply(rlist, function(x){x$z = x$x + x$y; x})
 
 # Generate Data ------------------------------------------------
 
@@ -88,18 +74,17 @@ sample5 <- function(x){
 
 out_list <- list()
 for (i in 1:20){
-  out_list[[as.character(i)]] <- tibble(day = sort(runif(20, 0, 50)),
-                                        river_mile = c(sample5(20:16),
-                                                       sample5(15:11),
-                                                       sample5(10:6),
-                                                       sample5(5:1)))
+  out_list[[i]] <- data.frame(day = sort(runif(20, 0, 50)),
+                              river_mile = c(sample5(20:16),
+                                             sample5(15:11),
+                                             sample5(10:6),
+                                             sample5(5:1)))
 }
 out_df <- bind_rows(out_list, .id = "cohort_id")
 head(out_df)
 
 # Save Plots ------------------------------------------------
 
-library(ggplot2)
 for (i in unique(out_df$cohort_id)){
   out_sub <- filter(out_df, cohort_id == i)
   ggplot(out_sub, aes(x = day, y = river_mile)) +
@@ -134,4 +119,19 @@ for (i in seq_along(fn)){
 }
 
 in_list <- lapply(fn, read.csv)
+
+# Split-Apply-Combine ------------------------------------------------
+
+out_list <- list()
+for (i in unique(PlantGrowth$group)){
+  pg_sub <- filter(PlantGrowth, group == i)
+  avg_weight_sub <- mean(pg_sub$weight)
+  out_list[[i]] <- data.frame(avg_weight = avg_weight_sub)
+}
+out_list
+bind_rows(out_list, .id = "group")
+
+PlantGrowth %>% 
+  group_by(group) %>% 
+  summarise(avg_weight = mean(weight))
 

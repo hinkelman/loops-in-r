@@ -2,21 +2,23 @@
 title: "Loops in R"
 author: "Travis Hinkelman"
 date: "2019-11-14"
-output: ioslides_presentation
+output: 
+  ioslides_presentation:
+    css: styles.css
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
+library(dplyr)
+library(ggplot2)
 ```
 
 ## Idiomatic R
 
-"Of course someone has to write loops. It doesn't have to be you." [- Jenny Bryan](https://speakerdeck.com/jennybc/row-oriented-workflows-in-r-with-the-tidyverse?slide=16)
+>Of course someone has to write loops. It doesn't have to be you. - [Jenny Bryan](https://speakerdeck.com/jennybc/row-oriented-workflows-in-r-with-the-tidyverse?slide=16)
 
-<br/><br/>
 But, if you are like me, you might find loops *more* intuitive for some tasks.
 
-<br/><br/>
 And, in some cases, a loop is the best tool for the job.
 
 ## Sequence
@@ -141,11 +143,11 @@ for (i in names(rlist)){
 }
 ```
 
-Same loop written with `dplyr::mutate` to add the column.
+Same loop written with `mutate` (from [`dplyr`](https://dplyr.tidyverse.org) package) to add the column.
 
-```{r echo = TRUE}
+```{r echo = TRUE, eval = FALSE}
 for (i in names(rlist)){
-  rlist[[i]] <- dplyr::mutate(rlist[[i]], z = x + y)
+  rlist[[i]] <- mutate(rlist[[i]], z = x + y)
 }
 ```
 
@@ -157,51 +159,18 @@ for (i in names(rlist)){
 }
 ```
 
-Same loop written with `dplyr::mutate` to add the column.
+Same loop written with `mutate` (from [`dplyr`](https://dplyr.tidyverse.org) package) to add the column.
 
 ```{r echo = TRUE}
 for (i in names(rlist)){
-  rlist[[i]] <- dplyr::mutate(rlist[[i]], z = x + y)
+  rlist[[i]] <- mutate(rlist[[i]], z = x + y)
 }
 ```
 
 Pairing `lapply` and an anonymous function allows you to skip the loop.
 
 ```{r echo = TRUE}
-rlist <- lapply(rlist, function(x){x$z = x$x + x$y; return(x)})
-```
-
-## Split-Apply-Combine
-
-```{r echo = TRUE}
-suppressPackageStartupMessages(library(dplyr))
-out_list <- list()
-for (i in unique(PlantGrowth$group)){
-  pg_sub <- filter(PlantGrowth, group == i)
-  avg_weight_sub <- mean(pg_sub$weight)
-  out_list[[i]] <- tibble(avg_weight = avg_weight_sub)
-}
-bind_rows(out_list, .id = "group")
-```
-
-## Split-Apply-Combine
-
-```{r echo = TRUE, eval = FALSE}
-suppressPackageStartupMessages(library(dplyr))
-out_list <- list()
-for (i in unique(PlantGrowth$group)){
-  pg_sub <- filter(PlantGrowth, group == i)
-  avg_weight_sub <- mean(pg_sub$weight)
-  out_list[[i]] <- tibble(avg_weight = avg_weight_sub)
-}
-```
-
-Skip the loop with `group_by` and `summarise`.
-
-```{r echo = TRUE, eval = FALSE}
-PlantGrowth %>% 
-  group_by(group) %>% 
-  summarise(avg_weight = mean(weight))
+rlist <- lapply(rlist, function(x){x$z = x$x + x$y; x})
 ```
 
 ## Generate Data
@@ -209,16 +178,16 @@ PlantGrowth %>%
 Crude approach to simulate acoustic telemetry data of emigrating juvenile salmon.
 
 ```{r echo = TRUE}
-sample5 <- function(x){ sample(x, 5, replace = TRUE)}
+sample5 <- function(x){sample(x, 5, replace = TRUE)}
 
 out_list <- list()
 for (i in 1:20){
-  out_list[[as.character(i)]] <- 
-    tibble(day = sort(runif(20, 0, 50)),
-           river_mile = c(sample5(20:16),
-                          sample5(15:11),
-                          sample5(10:6),
-                          sample5(5:1)))
+  out_list[[i]] <- 
+    data.frame(day = sort(runif(20, 0, 50)),
+               river_mile = c(sample5(20:16),
+                              sample5(15:11),
+                              sample5(10:6),
+                              sample5(5:1)))
 }
 out_df <- bind_rows(out_list, .id = "cohort_id")
 ```
@@ -284,16 +253,52 @@ Skip the loop with `lapply`.
 in_list <- lapply(fn, read.csv)
 ```
 
+## Split-Apply-Combine
+
+```{r echo = TRUE}
+out_list <- list()
+for (i in unique(PlantGrowth$group)){
+  pg_sub <- filter(PlantGrowth, group == i)
+  avg_weight_sub <- mean(pg_sub$weight)
+  out_list[[i]] <- data.frame(avg_weight = avg_weight_sub)
+}
+bind_rows(out_list, .id = "group")
+```
+
+## Split-Apply-Combine
+
+```{r echo = TRUE, eval = FALSE}
+out_list <- list()
+for (i in unique(PlantGrowth$group)){
+  pg_sub <- filter(PlantGrowth, group == i)
+  avg_weight_sub <- mean(pg_sub$weight)
+  out_list[[i]] <- data.frame(avg_weight = avg_weight_sub)
+}
+bind_rows(out_list, .id = "group")
+```
+
+Skip the loop with `group_by` and `summarise`.
+
+```{r echo = TRUE, eval = FALSE}
+PlantGrowth %>% 
+  group_by(group) %>% 
+  summarise(avg_weight = mean(weight))
+```
+
 ## Take-away Points
 
 When available, use vectorized functions.
 
-<br/><br/>
+Loops are useful when filling arrays, reading/writing data, and saving plots.
+
+Loops are natural extension of procedural style of programming.
+
 Growing a data structure in a loop is inefficient.  
 Pre-allocate instead.
 
-<br/><br/>
 If you don't find loops intuitive, explore the [`apply`](https://nsaunders.wordpress.com/2010/08/20/a-brief-introduction-to-apply-in-r/) family of functions or the [`purrr`](https://purrr.tidyverse.org) package.
 
+## Take-away Points
 
+>I was just reminded I've gone 782 days with no loops written in #rstats. Why do we need to teach these to beginners again? - [Miles McBain](https://twitter.com/MilesMcBain/status/966849825634369536)
 

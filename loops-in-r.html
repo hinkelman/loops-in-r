@@ -3103,6 +3103,12 @@ slide:not(.current) .plotly.html-widget{
 
   </style>
 
+  <style type="text/css">blockquote {
+background: #f9f9f9;
+border-left: 5px solid #ccc;
+margin: 1.5em 10px;
+padding: 0.5em 1.5em;
+}</style>
 
 </head>
 
@@ -3122,11 +3128,13 @@ slide:not(.current) .plotly.html-widget{
 
 <slide class=""><hgroup><h2>Idiomatic R</h2></hgroup><article  id="idiomatic-r">
 
-<p>&ldquo;Of course someone has to write loops. It doesn’t have to be you.&rdquo; <a href='https://speakerdeck.com/jennybc/row-oriented-workflows-in-r-with-the-tidyverse?slide=16' title=''>- Jenny Bryan</a></p>
+<blockquote>
+<p>Of course someone has to write loops. It doesn’t have to be you. - <a href='https://speakerdeck.com/jennybc/row-oriented-workflows-in-r-with-the-tidyverse?slide=16' title=''>Jenny Bryan</a></p>
+</blockquote>
 
-<p><br/><br/> But, if you are like me, you might find loops <em>more</em> intuitive for some tasks.</p>
+<p>But, if you are like me, you might find loops <em>more</em> intuitive for some tasks.</p>
 
-<p><br/><br/> And, in some cases, a loop is the best tool for the job.</p>
+<p>And, in some cases, a loop is the best tool for the job.</p>
 
 </article></slide><slide class=""><hgroup><h2>Sequence</h2></hgroup><article  id="sequence">
 
@@ -3225,15 +3233,15 @@ rlist</pre>
 
 <pre >## $A
 ##   x y
-## 1 9 9
-## 2 4 7
-## 3 5 1
+## 1 4 9
+## 2 1 8
+## 3 3 3
 ## 
 ## $B
-##    x y
-## 1  9 6
-## 2 10 2
-## 3  8 7</pre>
+##   x y
+## 1 2 3
+## 2 3 5
+## 3 4 4</pre>
 
 </article></slide><slide class=""><hgroup><h2>Manipulate Lists</h2></hgroup><article  id="manipulate-lists-1">
 
@@ -3267,10 +3275,10 @@ rlist[[&quot;F&quot;]]$z &lt;- rlist[[&quot;F&quot;]]$x + rlist[[&quot;F&quot;]]
   rlist[[i]]$z &lt;- rlist[[i]]$x + rlist[[i]]$y
 }</pre>
 
-<p>Same loop written with <code>dplyr::mutate</code> to add the column.</p>
+<p>Same loop written with <code>mutate</code> (from <a href='https://dplyr.tidyverse.org' title=''><code>dplyr</code></a> package) to add the column.</p>
 
 <pre class = 'prettyprint lang-r'>for (i in names(rlist)){
-  rlist[[i]] &lt;- dplyr::mutate(rlist[[i]], z = x + y)
+  rlist[[i]] &lt;- mutate(rlist[[i]], z = x + y)
 }</pre>
 
 </article></slide><slide class=""><hgroup><h2>Manipulate Lists</h2></hgroup><article  id="manipulate-lists-4">
@@ -3279,64 +3287,30 @@ rlist[[&quot;F&quot;]]$z &lt;- rlist[[&quot;F&quot;]]$x + rlist[[&quot;F&quot;]]
   rlist[[i]]$z &lt;- rlist[[i]]$x + rlist[[i]]$y
 }</pre>
 
-<p>Same loop written with <code>dplyr::mutate</code> to add the column.</p>
+<p>Same loop written with <code>mutate</code> (from <a href='https://dplyr.tidyverse.org' title=''><code>dplyr</code></a> package) to add the column.</p>
 
 <pre class = 'prettyprint lang-r'>for (i in names(rlist)){
-  rlist[[i]] &lt;- dplyr::mutate(rlist[[i]], z = x + y)
+  rlist[[i]] &lt;- mutate(rlist[[i]], z = x + y)
 }</pre>
 
 <p>Pairing <code>lapply</code> and an anonymous function allows you to skip the loop.</p>
 
-<pre class = 'prettyprint lang-r'>rlist &lt;- lapply(rlist, function(x){x$z = x$x + x$y; return(x)})</pre>
-
-</article></slide><slide class=""><hgroup><h2>Split-Apply-Combine</h2></hgroup><article  id="split-apply-combine">
-
-<pre class = 'prettyprint lang-r'>suppressPackageStartupMessages(library(dplyr))
-out_list &lt;- list()
-for (i in unique(PlantGrowth$group)){
-  pg_sub &lt;- filter(PlantGrowth, group == i)
-  avg_weight_sub &lt;- mean(pg_sub$weight)
-  out_list[[i]] &lt;- tibble(avg_weight = avg_weight_sub)
-}
-bind_rows(out_list, .id = &quot;group&quot;)</pre>
-
-<pre >## # A tibble: 3 x 2
-##   group avg_weight
-##   &lt;chr&gt;      &lt;dbl&gt;
-## 1 ctrl        5.03
-## 2 trt1        4.66
-## 3 trt2        5.53</pre>
-
-</article></slide><slide class=""><hgroup><h2>Split-Apply-Combine</h2></hgroup><article  id="split-apply-combine-1">
-
-<pre class = 'prettyprint lang-r'>suppressPackageStartupMessages(library(dplyr))
-out_list &lt;- list()
-for (i in unique(PlantGrowth$group)){
-  pg_sub &lt;- filter(PlantGrowth, group == i)
-  avg_weight_sub &lt;- mean(pg_sub$weight)
-  out_list[[i]] &lt;- tibble(avg_weight = avg_weight_sub)
-}</pre>
-
-<p>Skip the loop with <code>group_by</code> and <code>summarise</code>.</p>
-
-<pre class = 'prettyprint lang-r'>PlantGrowth %&gt;% 
-  group_by(group) %&gt;% 
-  summarise(avg_weight = mean(weight))</pre>
+<pre class = 'prettyprint lang-r'>rlist &lt;- lapply(rlist, function(x){x$z = x$x + x$y; x})</pre>
 
 </article></slide><slide class=""><hgroup><h2>Generate Data</h2></hgroup><article  id="generate-data">
 
 <p>Crude approach to simulate acoustic telemetry data of emigrating juvenile salmon.</p>
 
-<pre class = 'prettyprint lang-r'>sample5 &lt;- function(x){ sample(x, 5, replace = TRUE)}
+<pre class = 'prettyprint lang-r'>sample5 &lt;- function(x){sample(x, 5, replace = TRUE)}
 
 out_list &lt;- list()
 for (i in 1:20){
-  out_list[[as.character(i)]] &lt;- 
-    tibble(day = sort(runif(20, 0, 50)),
-           river_mile = c(sample5(20:16),
-                          sample5(15:11),
-                          sample5(10:6),
-                          sample5(5:1)))
+  out_list[[i]] &lt;- 
+    data.frame(day = sort(runif(20, 0, 50)),
+               river_mile = c(sample5(20:16),
+                              sample5(15:11),
+                              sample5(10:6),
+                              sample5(5:1)))
 }
 out_df &lt;- bind_rows(out_list, .id = &quot;cohort_id&quot;)</pre>
 
@@ -3344,19 +3318,17 @@ out_df &lt;- bind_rows(out_list, .id = &quot;cohort_id&quot;)</pre>
 
 <pre class = 'prettyprint lang-r'>head(out_df, 10)</pre>
 
-<pre >## # A tibble: 10 x 3
-##    cohort_id   day river_mile
-##    &lt;chr&gt;     &lt;dbl&gt;      &lt;int&gt;
-##  1 1          7.95         18
-##  2 1         10.4          20
-##  3 1         10.5          17
-##  4 1         11.4          20
-##  5 1         11.4          18
-##  6 1         12.1          13
-##  7 1         14.0          13
-##  8 1         17.1          11
-##  9 1         17.2          11
-## 10 1         20.6          14</pre>
+<pre >##    cohort_id       day river_mile
+## 1          1  1.273296         18
+## 2          1  5.156774         17
+## 3          1  6.041619         16
+## 4          1  7.018367         20
+## 5          1  7.240856         20
+## 6          1  8.191988         14
+## 7          1 17.339633         13
+## 8          1 24.271378         11
+## 9          1 24.657460         12
+## 10         1 31.217195         15</pre>
 
 </article></slide><slide class=""><hgroup><h2>Save Plots</h2></hgroup><article  id="save-plots">
 
@@ -3405,13 +3377,54 @@ for (i in seq_along(fn)){
 
 <pre class = 'prettyprint lang-r'>in_list &lt;- lapply(fn, read.csv)</pre>
 
+</article></slide><slide class=""><hgroup><h2>Split-Apply-Combine</h2></hgroup><article  id="split-apply-combine">
+
+<pre class = 'prettyprint lang-r'>out_list &lt;- list()
+for (i in unique(PlantGrowth$group)){
+  pg_sub &lt;- filter(PlantGrowth, group == i)
+  avg_weight_sub &lt;- mean(pg_sub$weight)
+  out_list[[i]] &lt;- data.frame(avg_weight = avg_weight_sub)
+}
+bind_rows(out_list, .id = &quot;group&quot;)</pre>
+
+<pre >##   group avg_weight
+## 1  ctrl      5.032
+## 2  trt1      4.661
+## 3  trt2      5.526</pre>
+
+</article></slide><slide class=""><hgroup><h2>Split-Apply-Combine</h2></hgroup><article  id="split-apply-combine-1">
+
+<pre class = 'prettyprint lang-r'>out_list &lt;- list()
+for (i in unique(PlantGrowth$group)){
+  pg_sub &lt;- filter(PlantGrowth, group == i)
+  avg_weight_sub &lt;- mean(pg_sub$weight)
+  out_list[[i]] &lt;- data.frame(avg_weight = avg_weight_sub)
+}
+bind_rows(out_list, .id = &quot;group&quot;)</pre>
+
+<p>Skip the loop with <code>group_by</code> and <code>summarise</code>.</p>
+
+<pre class = 'prettyprint lang-r'>PlantGrowth %&gt;% 
+  group_by(group) %&gt;% 
+  summarise(avg_weight = mean(weight))</pre>
+
 </article></slide><slide class=""><hgroup><h2>Take-away Points</h2></hgroup><article  id="take-away-points">
 
 <p>When available, use vectorized functions.</p>
 
-<p><br/><br/> Growing a data structure in a loop is inefficient.<br/>Pre-allocate instead.</p>
+<p>Loops are useful when filling arrays, reading/writing data, and saving plots.</p>
 
-<p><br/><br/> If you don’t find loops intuitive, explore the <a href='https://nsaunders.wordpress.com/2010/08/20/a-brief-introduction-to-apply-in-r/' title=''><code>apply</code></a> family of functions or the <a href='https://purrr.tidyverse.org' title=''><code>purrr</code></a> package.</p></article></slide>
+<p>Loops are natural extension of procedural style of programming.</p>
+
+<p>Growing a data structure in a loop is inefficient.<br/>Pre-allocate instead.</p>
+
+<p>If you don’t find loops intuitive, explore the <a href='https://nsaunders.wordpress.com/2010/08/20/a-brief-introduction-to-apply-in-r/' title=''><code>apply</code></a> family of functions or the <a href='https://purrr.tidyverse.org' title=''><code>purrr</code></a> package.</p>
+
+</article></slide><slide class=""><hgroup><h2>Take-away Points</h2></hgroup><article  id="take-away-points-1">
+
+<blockquote>
+<p>I was just reminded I’ve gone 782 days with no loops written in #rstats. Why do we need to teach these to beginners again? - <a href='https://twitter.com/MilesMcBain/status/966849825634369536' title=''>Miles McBain</a></p>
+</blockquote></article></slide>
 
 
   <slide class="backdrop"></slide>
