@@ -3232,16 +3232,16 @@ out[, , 1]</pre>
 rlist</pre>
 
 <pre >## $A
-##    x y
-## 1 10 9
-## 2  6 5
-## 3  3 3
+##   x y
+## 1 5 9
+## 2 9 4
+## 3 7 7
 ## 
 ## $B
-##   x  y
-## 1 3 10
-## 2 4  1
-## 3 6  4</pre>
+##    x y
+## 1 10 9
+## 2  7 8
+## 3  3 1</pre>
 
 </article></slide><slide class=""><hgroup><h2>Manipulate Lists</h2></hgroup><article  id="manipulate-lists-1">
 
@@ -3312,34 +3312,34 @@ for (i in 1:20){
                               sample5(10:6),
                               sample5(5:1)))
 }
-out_df &lt;- dplyr::bind_rows(out_list, .id = &quot;cohort_id&quot;)</pre>
+out_df &lt;- dplyr::bind_rows(out_list, .id = &quot;tag_id&quot;)</pre>
 
 </article></slide><slide class=""><hgroup><h2>Generate Data</h2></hgroup><article  id="generate-data-1">
 
 <pre class = 'prettyprint lang-r'>head(out_df, 10)</pre>
 
-<pre >##    cohort_id        day river_mile
-## 1          1  0.6806792         18
-## 2          1  1.6473979         18
-## 3          1  5.7034870         18
-## 4          1  6.1451043         17
-## 5          1  6.5611578         16
-## 6          1  8.9997531         11
-## 7          1 22.5637265         12
-## 8          1 23.4448595         15
-## 9          1 23.5409107         12
-## 10         1 24.4495831         11</pre>
+<pre >##    tag_id       day river_mile
+## 1       1  1.758327         16
+## 2       1  3.086851         17
+## 3       1 10.877005         18
+## 4       1 17.053174         16
+## 5       1 18.076580         16
+## 6       1 22.217030         12
+## 7       1 22.775077         11
+## 8       1 24.227916         13
+## 9       1 24.695711         11
+## 10      1 24.950155         13</pre>
 
 </article></slide><slide class=""><hgroup><h2>Save Plots</h2></hgroup><article  id="save-plots">
 
 <pre class = 'prettyprint lang-r'>library(ggplot2)
-for (i in unique(out_df$cohort_id)){
-  out_sub &lt;- dplyr::filter(out_df, cohort_id == i)
+for (i in unique(out_df$tag_id)){
+  out_sub &lt;- dplyr::filter(out_df, tag_id == i)
   ggplot(out_sub, aes(x = day, y = river_mile)) +
     geom_line() +
     geom_point() +
-    labs(title = paste(&quot;Cohort&quot;, i))
-  ggsave(filename = paste0(&quot;Cohort_&quot;, i, &quot;.png&quot;), 
+    labs(title = paste(&quot;Tag&quot;, i))
+  ggsave(filename = paste0(&quot;Tag_&quot;, i, &quot;.png&quot;), 
          width = 6, 
          height = 4, 
          path = &quot;figures&quot;)
@@ -3349,10 +3349,10 @@ for (i in unique(out_df$cohort_id)){
 
 <p>Splitting data frames</p>
 
-<pre class = 'prettyprint lang-r'>for (i in unique(out_df$cohort_id)){
-  out_sub &lt;- dplyr::filter(out_df, cohort_id == i)
+<pre class = 'prettyprint lang-r'>for (i in unique(out_df$tag_id)){
+  out_sub &lt;- dplyr::filter(out_df, tag_id == i)
   write.csv(x = out_sub,
-            file = file.path(&quot;output&quot;, paste0(&quot;Cohort_&quot;, i, &quot;.csv&quot;)),
+            file = file.path(&quot;output&quot;, paste0(&quot;Tag_&quot;, i, &quot;.csv&quot;)),
             row.names = FALSE)
 }</pre>
 
@@ -3360,7 +3360,7 @@ for (i in unique(out_df$cohort_id)){
 
 <pre class = 'prettyprint lang-r'>for (i in names(out_list)){
   write.csv(x = out_list[[i]],
-            file = file.path(&quot;output&quot;, paste0(&quot;Cohort_&quot;, i, &quot;.csv&quot;)),
+            file = file.path(&quot;output&quot;, paste0(&quot;Tag_&quot;, i, &quot;.csv&quot;)),
             row.names = FALSE)
 }</pre>
 
