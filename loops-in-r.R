@@ -80,34 +80,35 @@ for (i in 1:20){
                                              sample5(10:6),
                                              sample5(5:1)))
 }
-out_df <- bind_rows(out_list, .id = "cohort_id")
+out_df <- bind_rows(out_list, .id = "tag_id")
 head(out_df)
 
 # Save Plots ------------------------------------------------
 
 if (!dir.exists("figures")) dir.create("figures")
-for (i in unique(out_df$cohort_id)){
-  out_sub <- filter(out_df, cohort_id == i)
+for (i in unique(out_df$tag_id)){
+  out_sub <- filter(out_df, tag_id == i)
   ggplot(out_sub, aes(x = day, y = river_mile)) +
     geom_line() +
     geom_point() +
-    labs(title = paste("Cohort", i))
-  ggsave(paste0("Cohort_", i, ".png"), width = 6, height = 4, path = "figures")
+    labs(title = paste("Tag", i))
+  ggsave(paste0("Tag_", i, ".png"), width = 6, height = 4, path = "figures")
 }
 
 # Write Files ------------------------------------------------
 
 if (!dir.exists("output")) dir.create("output")
-for (i in names(out_list)){
-  write.csv(x = mutate(out_list[[i]], cohort_id = i),
-            file = file.path("output", paste0("Cohort_", i, ".csv")),
+for (i in 1:length(out_list)){
+  write.csv(x = mutate(out_list[[i]], tag_id = i),
+            file = file.path("output", paste0("Tag_", i, ".csv")),
             row.names = FALSE)
 }
 
-for (i in unique(out_df$cohort_id)){
-  out_sub <- filter(out_df, cohort_id == i)
+if (!dir.exists("output")) dir.create("output")
+for (i in unique(out_df$tag_id)){
+  out_sub <- filter(out_df, tag_id == i)
   write.csv(x = out_sub,
-            file = file.path("output", paste0("Cohort_", i, ".csv")),
+            file = file.path("output", paste0("Tag_", i, ".csv")),
             row.names = FALSE)
 }
 
@@ -132,6 +133,9 @@ for (i in unique(PlantGrowth$group)){
 }
 out_list
 bind_rows(out_list, .id = "group")
+
+# I used to write loops for Split-Apply-Combine workflows
+# dplyr package greatly streamlined that workflow
 
 PlantGrowth %>% 
   group_by(group) %>% 

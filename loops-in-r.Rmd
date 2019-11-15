@@ -187,7 +187,7 @@ for (i in 1:20){
                               sample5(10:6),
                               sample5(5:1)))
 }
-out_df <- dplyr::bind_rows(out_list, .id = "cohort_id")
+out_df <- dplyr::bind_rows(out_list, .id = "tag_id")
 ```
 
 ## Generate Data
@@ -200,13 +200,13 @@ head(out_df, 10)
 
 ```{r echo = TRUE, eval = FALSE}
 library(ggplot2)
-for (i in unique(out_df$cohort_id)){
-  out_sub <- dplyr::filter(out_df, cohort_id == i)
+for (i in unique(out_df$tag_id)){
+  out_sub <- dplyr::filter(out_df, tag_id == i)
   ggplot(out_sub, aes(x = day, y = river_mile)) +
     geom_line() +
     geom_point() +
-    labs(title = paste("Cohort", i))
-  ggsave(filename = paste0("Cohort_", i, ".png"), 
+    labs(title = paste("Tag", i))
+  ggsave(filename = paste0("Tag_", i, ".png"), 
          width = 6, 
          height = 4, 
          path = "figures")
@@ -217,10 +217,10 @@ for (i in unique(out_df$cohort_id)){
 
 Splitting data frames
 ```{r echo = TRUE, eval = FALSE}
-for (i in unique(out_df$cohort_id)){
-  out_sub <- dplyr::filter(out_df, cohort_id == i)
+for (i in unique(out_df$tag_id)){
+  out_sub <- dplyr::filter(out_df, tag_id == i)
   write.csv(x = out_sub,
-            file = file.path("output", paste0("Cohort_", i, ".csv")),
+            file = file.path("output", paste0("Tag_", i, ".csv")),
             row.names = FALSE)
 }
 ```
@@ -229,7 +229,7 @@ Elements of a list
 ```{r echo = TRUE, eval = FALSE}
 for (i in names(out_list)){
   write.csv(x = out_list[[i]],
-            file = file.path("output", paste0("Cohort_", i, ".csv")),
+            file = file.path("output", paste0("Tag_", i, ".csv")),
             row.names = FALSE)
 }
 ```
